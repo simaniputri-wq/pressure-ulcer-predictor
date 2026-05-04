@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pressure Ulcer Stage Predictor</title>
+
+<style>
+body{
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg,#2c3e50,#4ca1af);
+    margin:0;
+}
+
+/* HEADER */
+.header{
+    text-align:center;
+    color:white;
+    padding:30px;
+}
+.header p{
+    margin:5px;
+}
+
+/* CARD */
+.container{
+    background:white;
+    width:420px;
+    margin:30px auto;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 15px 30px rgba(0,0,0,0.3);
+    text-align:center;
+}
+
+/* BUTTON */
+button{
+    background: linear-gradient(135deg,#4ca1af,#2c3e50);
+    color:white;
+    border:none;
+    padding:12px 30px;
+    border-radius:10px;
+    font-size:16px;
+    cursor:pointer;
+}
+
+/* RESULT */
+.result{
+    margin-top:20px;
+    padding:15px;
+    border-radius:10px;
+    font-weight:bold;
+    color:white;
+}
+
+/* WARNA STAGE */
+.stage1{ background:#2ecc71; }
+.stage2{ background:#f1c40f; }
+.stage3{ background:#e67e22; }
+.stage4{ background:#e74c3c; }
+
+/* IMAGE */
+img.preview{
+    margin-top:15px;
+    max-width:100%;
+    border-radius:10px;
+}
+
+/* FOOTER */
+.footer{
+    text-align:center;
+    color:white;
+    font-size:12px;
+    margin-top:20px;
+    padding-bottom:20px;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <h1>🩺 Pressure Ulcer Stage Predictor</h1>
+
+    <p style="font-size:13px;">
+        <strong>Suci Imani Putri || R. Yunan Helmy </strong><br>
+        Akademi Teknik Elektromedik Andakara
+    </p>
+
+    <p style="font-size:13px;">
+        <strong>Ananda Prastuti Sutrisno</strong><br>
+        Akademi Keperawatan Andakara
+    </p>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+
+<h2>Upload Picture Here!</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    <input type="file" name="file" required>
+    <br><br>
+    <button type="submit">🔍 Analyze</button>
+</form>
+
+{% if prediction %}
+
+{% set stage_class = 
+    'stage1' if prediction == 'Stage 1' else
+    'stage2' if prediction == 'Stage 2' else
+    'stage3' if prediction == 'Stage 3' else
+    'stage4' %}
+
+<div class="result {{ stage_class }}">
+    {{ prediction }} <br>
+    Confidence: {{ confidence }}%
+</div>
+
+<p style="font-size:13px; color:#555;">
+    This system is designed to predict the stage of pressure ulcers based on medical images.
+</p>
+
+<p style="font-size:12px; color:#888;">
+    This page will automatically reset in 30 seconds...
+</p>
+
+<!-- AUTO RESET 30 DETIK -->
+<script>
+setTimeout(function(){
+    window.location.href = "/";
+}, 30000);
+</script>
+
+{% endif %}
+
+{% if filename %}
+<img src="{{ url_for('static', filename='uploads/' + filename) }}" class="preview">
+{% endif %}
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+    © 2026 | Suci Imani Putri, R. Yunan Helmy & Ananda Prastuti Sutrisno  
+    <br>
+    Akademi Teknik Elektromedik Andakara | Akademi Keperawatan Andakara
+</div>
+
+</body>
+</html>
