@@ -3,13 +3,23 @@ import numpy as np
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 import os
+import gdown
 
 app = Flask(__name__)
 
 # =========================
+# DOWNLOAD MODEL (AUTO)
+# =========================
+MODEL_PATH = "model_cnn.h5"
+
+if not os.path.exists(MODEL_PATH):
+    url = "https://drive.google.com/uc?id=164WfnE6D0MBBaJ4PFlys8DB1yFt_qt5z"
+    gdown.download(url, MODEL_PATH, quiet=False)
+
+# =========================
 # LOAD MODEL
 # =========================
-model = load_model("model_cnn.h5")
+model = load_model(MODEL_PATH)
 
 # =========================
 # CONFIG UPLOAD
@@ -17,7 +27,6 @@ model = load_model("model_cnn.h5")
 UPLOAD_FOLDER = "static/uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-# pastikan folder ada
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 class_names = ["Stage 1", "Stage 2", "Stage 3", "Stage 4"]
@@ -46,7 +55,7 @@ def index():
         file = request.files["file"]
 
         if file and file.filename != "":
-            filename = file.filename  # 🔥 ambil nama file
+            filename = file.filename
 
             filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
             file.save(filepath)
@@ -57,13 +66,14 @@ def index():
                 "index.html",
                 prediction=label,
                 confidence=round(confidence, 2),
-                filename=filename  # 🔥 kirim ke HTML
+                filename=filename
             )
 
     return render_template("index.html")
 
 # =========================
-# RUN
+# RUN (RENDER SAFE)
 # =========================
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
